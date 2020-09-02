@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Course;
+use App\Notifications\ResetPassword as CustomResetPassword;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,6 +15,9 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use Notifiable, HasApiTokens;
+
+    public $tokenName = 'Authentication Token';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,7 +45,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public $tokenName = 'Authentication Token';
 
     public function setPasswordAttribute($value)
     {

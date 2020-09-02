@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\controllers;
 
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -82,14 +82,12 @@ class AuthTest extends TestCase
     {
         $data = $this->registerInputs;
 
-        $this->postJson('/api/register', $data);
+        $response = $this->postJson('/api/auth/register', $data);
 
-        $response = $this->postJson('/api/register', $data);
+        $response = $this->postJson('/api/auth/register', $data);
 
         $response->assertJsonStructure([
-            'errors' => [
-                'email'
-            ]
+            'errors' => [ 'email' ]
         ]);
     }
 
@@ -97,7 +95,7 @@ class AuthTest extends TestCase
     {
         $data = $this->registerInputs;
 
-        $this->postJson('/api/register', $this->registerInputs)
+        $this->postJson('/api/auth/register', $this->registerInputs)
             ->assertStatus(201);
     }
 
@@ -105,11 +103,13 @@ class AuthTest extends TestCase
     {
         $data = $this->registerInputs;
 
-        $response = $this->postJson('/api/register', $this->registerInputs);
+        $response = $this->postJson('/api/auth/register', $this->registerInputs);
 
         $response->assertJsonStructure([
             'user',
             'token'
         ]);
     }
+
+   
 }

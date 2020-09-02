@@ -6,6 +6,7 @@ use App\User;
 use App\Course;
 use App\Section;
 use App\Lesson;
+use App\Comment;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,6 +31,12 @@ class DatabaseSeeder extends Seeder
             $lesson1 = factory(Lesson::class)->create([
                 'section_id' => $section1->id
             ]);
+
+            $comment = factory(Comment::class)->create([
+                'user_id' => $user->id,
+                'lesson_id' => $lesson1->id
+            ]);
+
             $lesson11 = factory(Lesson::class)->create([
                 'section_id' => $section1->id
             ]);

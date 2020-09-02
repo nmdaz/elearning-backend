@@ -1,15 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\User as UserResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class AuthController extends Controller
 {
+    use SendsPasswordResetEmails;
+    
     public function login(Request $request)
     {
     	$credentials = $request->only(['email', 'password']);
@@ -55,10 +59,5 @@ class AuthController extends Controller
         	'user' => new UserResource($user),
             'token' => $token
         ], 201);
-    }
-
-    public function logout()
-    {
-
     }
 }
