@@ -34,6 +34,8 @@ Route::middleware('auth:sanctum')->group( function () {
 	Route::post('/comments/{comment}/like', 'LikeController@like');
 	Route::post('/comments/{comment}/dislike', 'LikeController@dislike');
 	Route::post('/comments/{comment}/unlike', 'LikeController@unlike');
+
+	Route::post('/comments/{comment}/replies', 'ReplyController@store');
 });
 
 

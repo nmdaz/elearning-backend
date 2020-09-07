@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\LikeCollection;
+use App\Http\Resources\ReplyCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,8 @@ class Comment extends JsonResource
             'updated_at' => $this->updated_at,
             'user_name' => $this->user->name,
             'likes' => new LikeCollection($this->likes()->where('liked', true)->get()),
-            'dislikes' => new LikeCollection($this->likes()->where('liked', false)->get())
+            'dislikes' => new LikeCollection($this->likes()->where('liked', false)->get()),
+            'replies' => new ReplyCollection($this->replies()->latest()->get())
         ];
     }
 }

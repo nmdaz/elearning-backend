@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Like;
+use App\Reply;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,6 +46,14 @@ class Comment extends Model
     public function unlikeBy(User $user)
     {
         $this->likes()->where('user_id', $user->id)->delete();
+    }
+
+    public function replies() {
+        return $this->HasMany(Reply::class);
+    }
+
+    public function reply(User $user, $body) {
+        $this->replies()->save(new Reply(['user_id' => $user->id, 'body' => $body]));
     }
 
 }

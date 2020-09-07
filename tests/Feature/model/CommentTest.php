@@ -11,11 +11,10 @@ use Tests\TestCase;
 
 class CommentTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     public function setUp() :void {
         parent::setUp();
-        //Schema::disableForeignKeyConstraints();
     }
 
     public function test_likeBy() {
@@ -49,8 +48,6 @@ class CommentTest extends TestCase
     }
 
     public function test_unlikeBy() {
-        $this->withoutExceptionHandling();
-
         $user = factory(User::class)->create();
         $comment = factory(Comment::class)->create(['lesson_id' => 1, 'user_id' => 1]);
         $comment->likeBy($user);
@@ -64,5 +61,26 @@ class CommentTest extends TestCase
 
         $this->assertDatabaseMissing('likes', $data);
         $this->assertEquals(0, $comment->likes()->where($data)->get()->count());
+    }
+
+    public function test_reply()
+    {
+        Schema::disableForeignKeyConstraints();
+
+        $user = factory(User::class)->create();
+        $comment = factory(Comment::class)->create(['lesson_id' => 1, 'user_id' => 1]);
+
+        Schema::enableForeignKeyConstraints();
+
+        $data = [
+            'user_id' => $user->id,
+            'comment_id' => $comment->id,
+            'body' => $this->faker->paragraph
+        ];
+
+        $comment->reply($user, $data['body']);
+
+        $this->assertDatabaseHas('replies', $data);
+        $this->assertEquals(1, $comment->replies->count());
     }
 }

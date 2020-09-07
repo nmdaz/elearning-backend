@@ -67,8 +67,6 @@ class LikeControllerTest extends TestCase
 
         $response = $this->post("api/comments/$comment->id/like")
             ->assertSuccessful();
-
-        dd($response);
     }
 
     public function test_user_can_dislike_comment()
