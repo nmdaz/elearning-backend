@@ -19,6 +19,7 @@ class Lesson extends JsonResource
     {
         return [
             'id' => $this->id,
+            'section_id' => $this->section->id,
             'name' => $this->name,
             'description' => $this->description,
             'video' => $this->video,

@@ -9,7 +9,6 @@ $factory->define(Lesson::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence,
         'description' => $faker->paragraph,
-        'video' => null,
-        'watched' => false
+        'video_url' => 'https://youtube.com'
     ];
 });

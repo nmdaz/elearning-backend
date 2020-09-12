@@ -18,6 +18,7 @@ class CreateCoursesTable extends Migration
             $table->string('name');
             $table->string('cover_image');
             $table->text('description');
+            $table->binary('attachment')->nullable();
             $table->timestamps();
         });
     }

@@ -16,21 +16,26 @@ class TokenBearerControllerTest extends TestCase
 	public function setUp() :void {
 		parent::setUp();
 
-        $this->withoutExceptionHandling();
 	}
 
-    public function test_guest_access_tokenbearer_route_return_AuthenticationException()
+    public function test_guest_cant_access_token_bearer_route()
     {
-        $this->expectException(AuthenticationException::class);
-
-        $response = $this->get('/api/tokenbearer');
+        $this->getJson('/api/me')->dump()
+            ->assertUnauthorized();
     }
 
     public function test_with_bearer_token_return_status_code_ok()
     {
     	Sanctum::actingAs(factory(User::class)->create());
 
-        $response = $this->get('/api/tokenbearer')
-            ->assertOk();
+        $response = $this->getJson('/api/me')
+            ->assertOk()
+            ->assertJsonStructure([
+                'user' => [
+                    'id',
+                    'name',
+                    'email'
+                ]
+            ]);
     }
 }

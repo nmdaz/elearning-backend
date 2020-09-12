@@ -15,11 +15,10 @@ class CreateLessonsTable extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('section_id');
+            $table->foreignId('section_id')->constrained();
             $table->string('name');
             $table->text('description');
-            $table->string('video')->nullable();
-            $table->boolean('watched')->default(false);
+            $table->string('video_url');
             $table->timestamps();
         });
     }

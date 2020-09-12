@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 use App\User;
 
-class LessonCommentControllerTest extends TestCase
+class CommentControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 

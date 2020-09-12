@@ -111,7 +111,6 @@ class UserCourseControllerTest extends TestCase
                                     'name',
                                     'description',
                                     'video',
-                                    'watched',
                                     'created_at',
                                     'updated_at'
                                 ]

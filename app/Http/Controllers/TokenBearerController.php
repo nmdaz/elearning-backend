@@ -10,10 +10,7 @@ class TokenBearerController extends Controller
 {
     public function __invoke(Request $request)
     {
-    	//get current authenticated user
-    	$user = Auth::user();
-
     	//return json response
-    	return new User($user);
+    	return new User($request->user());
     }
 }
