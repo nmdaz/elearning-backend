@@ -19,7 +19,6 @@ class Section extends JsonResource
             'id' => $this->id,
             'course_id' => $this->course_id,
             'name' => $this->name,
-            'description' => $this->description,
             'lessons' => new LessonCollection($this->lessons),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at

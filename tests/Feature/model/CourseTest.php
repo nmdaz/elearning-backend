@@ -14,9 +14,14 @@ class CourseTest extends TestCase
 {
     public function setUp() :void {
         parent::setUp();
-
         Storage::fake('public');
     }
+
+    public function test_course_author()
+    {
+        
+    }
+    
     public function test_course_cover_image_path_exists()
     {
         $coverImage = UploadedFile::fake()->image('cover.jpeg');
@@ -28,9 +33,5 @@ class CourseTest extends TestCase
         Storage::disk('public')->assertExists('/covers/' . $coverImage->hashName());
     }
 
-    public function test_course_has_many_user()
-    {
-    	$course = factory(Course::class)->create();
-    	$this->assertInstanceOf(Collection::class, $course->users);
-    }
+   
 }

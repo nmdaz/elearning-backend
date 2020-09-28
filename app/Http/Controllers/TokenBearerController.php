@@ -10,7 +10,6 @@ class TokenBearerController extends Controller
 {
     public function __invoke(Request $request)
     {
-    	//return json response
     	return new User($request->user());
     }
 }

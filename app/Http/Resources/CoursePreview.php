@@ -5,10 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class Course extends JsonResource
+class CoursePreview extends JsonResource
 {
    public static $wrap = 'course';
-   public static $includeRelations = true;
    /**
     * Transform the resource into an array.
     *
@@ -27,10 +26,8 @@ class Course extends JsonResource
            'cover_image' => $coverImage,
            'cover_image_mime_type' => $coverImageType,
            'description' => $this->description,
-           'attachment_url' => $this->attachment,
            'created_at' => $this->created_at,
-           'updated_at' => $this->updated_at,
-           'sections' => $this->when(static::$includeRelations, new SectionCollection($this->sections))
+           'updated_at' => $this->updated_at
        ];
    }
 }

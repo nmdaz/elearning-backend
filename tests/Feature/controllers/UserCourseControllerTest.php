@@ -101,7 +101,6 @@ class UserCourseControllerTest extends TestCase
                             'id',
                             'course_id',
                             'name',
-                            'description',
                             'created_at',
                             'updated_at',
                             'lessons' => [
@@ -109,8 +108,7 @@ class UserCourseControllerTest extends TestCase
                                     'id',
                                     'section_id',
                                     'name',
-                                    'description',
-                                    'video',
+                                    'video_url',
                                     'created_at',
                                     'updated_at'
                                 ]

@@ -10,7 +10,11 @@ Route::prefix('auth')->group(function () {
 	Route::post('password/reset', 'Auth\ResetPasswordController');
 });
 
+Route::get('courses/{course}/download-attachment', 'CourseController@downloadAttachment');
+
 Route::apiResource('courses', 'CourseController');
+Route::apiResource('courses.sections', 'SectionController');
+Route::apiResource('courses.sections.lessons', 'LessonController');
 
 Route::middleware('auth:sanctum')->group( function () {
 	Route::get('/me', 'TokenBearerController');

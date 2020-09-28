@@ -11,11 +11,25 @@ use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
 {
+    protected $fillable = ['name', 'cover_image', 'description', 'attachment'];
+    
     public function setCoverImageAttribute(UploadedFile $value)
     {
     	$path = Storage::disk('public')->putFile('covers', $value);
 
     	$this->attributes['cover_image'] = $path;
+    }
+
+    public function setAttachmentAttribute(UploadedFile $value)
+    {
+        $path = Storage::disk('public')->putFile('attachments', $value);
+
+        $this->attributes['attachment'] = $path;
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function users()

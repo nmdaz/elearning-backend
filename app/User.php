@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Course;
+use App\User;
 use App\Notifications\ResetPassword as CustomResetPassword;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -51,14 +52,19 @@ class User extends Authenticatable
         $this->attributes['password'] = Hash::make($value);
     }
 
-    public function courses()
-    {
-        return $this->belongsToMany(Course::class);
-    }
-
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function authoredCourses()
+    {
+        return $this->hasMany(Course::class, 'author_id');
+    }
+
+    public function enrolledCourse()
+    {
+        return $this->belongsToMany(Course::class);
     }
 
 }

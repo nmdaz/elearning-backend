@@ -8,7 +8,6 @@ use Faker\Generator as Faker;
 $factory->define(Lesson::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence,
-        'description' => $faker->paragraph,
         'video_url' => 'https://youtube.com'
     ];
 });

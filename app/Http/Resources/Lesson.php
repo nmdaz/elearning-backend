@@ -21,8 +21,7 @@ class Lesson extends JsonResource
             'id' => $this->id,
             'section_id' => $this->section->id,
             'name' => $this->name,
-            'description' => $this->description,
-            'video' => $this->video,
+            'video_url' => $this->video_url,
             'created_at' => $this->created_at,
             'updated_at' => $this->update_at,
             'comments' => new CommentCollection($this->comments()->latest()->get())

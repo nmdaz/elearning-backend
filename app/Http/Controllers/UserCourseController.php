@@ -14,14 +14,13 @@ class UserCourseController extends Controller
 {
     public function index(User $user)
     {        
-    	$courses = $user->courses;
-
+    	$courses = $user->authoredCourses;
         return new CourseCollection($courses);
     }
 
     public function show(User $user, $courseId)
     {
-    	$course = $user->courses()->where('courses.id', $courseId)->first();
+    	$course = $user->authoredCourses()->where('courses.id', $courseId)->first();
     	return new CourseResource($course);
     }
 }
