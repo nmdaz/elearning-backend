@@ -46,7 +46,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
@@ -62,9 +61,18 @@ class User extends Authenticatable
         return $this->hasMany(Course::class, 'author_id');
     }
 
-    public function enrolledCourse()
+    public function enrolledCourses()
     {
         return $this->belongsToMany(Course::class);
+    }
+
+    public function notEnrolledCourses()
+    {
+        $userId = $this->id;
+
+        return Course::whereNotIn('id', function($query) use ($userId) {
+            $query->select('course_id')->from('course_user')->where('user_id', '=', $userId);
+        })->where('author_id', '!=', $this->id)->get();
     }
 
 }

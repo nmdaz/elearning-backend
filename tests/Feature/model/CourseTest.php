@@ -16,11 +16,6 @@ class CourseTest extends TestCase
         parent::setUp();
         Storage::fake('public');
     }
-
-    public function test_course_author()
-    {
-        
-    }
     
     public function test_course_cover_image_path_exists()
     {

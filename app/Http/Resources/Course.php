@@ -22,7 +22,7 @@ class Course extends JsonResource
 
        return [
            'id' => $this->id,
-           'author' => $this->author->id,
+           'author_id' => $this->author->id,
            'name' => $this->name,
            'cover_image' => $coverImage,
            'cover_image_mime_type' => $coverImageType,

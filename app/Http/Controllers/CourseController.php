@@ -21,11 +21,11 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $courses;
-
+        
     	if ((bool) $request->input('preview') == true) {
-    		$courses = new CoursePreviewCollection(Course::all());
+    		$courses = new CoursePreviewCollection(Course::paginate(2));
         } else {
-            $courses = new CourseCollection(Course::all());
+            $courses = new CourseCollection(Course::paginate(2));
         }
 
     	return $courses; 
