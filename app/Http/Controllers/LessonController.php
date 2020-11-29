@@ -6,6 +6,7 @@ use App\Course;
 use App\Lesson;
 use App\Section;
 use App\Http\Resources\Lesson as LessonResource;
+use App\Rules\YoutubeUrl;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,7 @@ class LessonController extends Controller
     {
     	$validator = Validator::make($request->all(), [
     		'name' => 'required|string',
-    		'video_url' => 'required|url'
+    		'video_url' => ['required', 'url', new YoutubeUrl]
     	]);
 
     	if ($validator->fails()) {

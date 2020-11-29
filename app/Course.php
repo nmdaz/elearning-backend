@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
 {
-    protected $fillable = ['name', 'cover_image', 'description', 'attachment'];
+    protected $fillable = ['name', 'cover_image', 'description', 'attachment', 'author_id'];
     
     public function setCoverImageAttribute(UploadedFile $value)
     {

@@ -27,7 +27,15 @@ Route::middleware('auth:sanctum')->group( function () {
 
 	Route::post('/comments/{comment}/replies', 'ReplyController@store');
 
-	Route::middleware(['can:view,user'])->group( function () {
+	Route::get('/users/{user}/authored-courses', 'UserAuthoredCourseController@index');
+
+	Route::get('/users/{user}/not-enrolled-courses', 'UserNotEnrolledCourseController@index');
+
+	Route::get('/users/{user}/enrolled-courses', 'UserEnrolledCourseController@index');
+	Route::post('/users/{user}/enrolled-courses/{course}', 'UserEnrolledCourseController@store');
+	Route::delete('/users/{user}/enrolled-courses/{course}', 'UserEnrolledCourseController@destroy');
+
+	Route::middleware(['can:view, user'])->group( function () {
 		Route::get('/users/{user}/courses', 'UserCourseController@index');
 		Route::get('/users/{user}/courses/{courseId}', 'UserCourseController@show');
 	});

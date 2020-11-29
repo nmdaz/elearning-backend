@@ -3,6 +3,9 @@
 namespace Tests\Feature\controllers;
 
 use App\Comment;
+use App\Course;
+use App\Lesson;
+use App\Section;
 use App\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,9 +18,19 @@ class LikeControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private $user;
+
     public function setUp() :void {
         parent::setUp();
-        $this->seed();
+
+        $user = factory(User::class)->create();
+        $user->authoredCourses()->save(factory(Course::class)->make());
+        $user->authoredCourses->first()->sections()->save(factory(Section::class)->make());
+        $user->authoredCourses->first()->sections->first()->lessons()->save(factory(Lesson::class)->make());
+
+        factory(Comment::class)->create(['lesson_id' => Lesson::first()->id, 'user_id' => User::first()->id]);
+
+        $this->user = $user;
         $this->withHeaders(['Accept' => 'application/json']);
     }
 

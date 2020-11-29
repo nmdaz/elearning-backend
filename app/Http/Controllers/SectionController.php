@@ -8,6 +8,7 @@ use App\Http\Resources\Section as SectionResource;
 use App\Http\Resources\SectionCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gates;
 
 class SectionController extends Controller
 {
@@ -23,6 +24,8 @@ class SectionController extends Controller
 
     public function store(Request $request, Course $course)
     {
+        $this->authorize('create', [Section::class, $course]);
+
     	$validator = Validator::make($request->all(), [
     		'name' => 'required|string'
     	]);
