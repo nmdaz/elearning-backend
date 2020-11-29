@@ -23,9 +23,9 @@ class CourseController extends Controller
         $courses;
         
     	if ((bool) $request->input('preview') == true) {
-    		$courses = new CoursePreviewCollection(Course::paginate(2));
+    		$courses = new CoursePreviewCollection(Course::paginate(5));
         } else {
-            $courses = new CourseCollection(Course::paginate(2));
+            $courses = new CourseCollection(Course::paginate(5));
         }
 
     	return $courses; 
