@@ -71,7 +71,37 @@ class CourseController extends Controller
         ], 201);
     }
 
-    public function downloadAttachment(Request $request, Course $course) {
-        return Storage::disk('public')->download($course->attachment);
+    public function update(Request $request, Course $course)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string',
+            'description' => 'string',
+            'cover_image' => 'mimes:jpg,jpeg,bmp,png',
+            'attachment' => 'mimes:zip,rar'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $validated = $validator->validated();
+
+        if (! $validated) {
+            return response()->json(['errors' => ['validation' => 'Empty request data']], 422);
+        }
+        
+        $course->update($validated);
+        return response()->json(['success' => 'Course was Updated'], 200);
+    }
+
+    public function downloadAttachment(Request $request, Course $course) 
+    {
+        if ($course->attachment) {
+            return Storage::disk('public')->download($course->attachment);
+        } else {
+            return response()->json(['errors' => [
+                'attachment' => 'Course has no attachment'
+            ]], 404);
+        }
     }
 }

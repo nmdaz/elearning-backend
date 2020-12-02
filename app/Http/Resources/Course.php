@@ -24,13 +24,13 @@ class Course extends JsonResource
            'id' => $this->id,
            'author_id' => $this->author->id,
            'name' => $this->name,
-           'cover_image' => $coverImage,
-           'cover_image_mime_type' => $coverImageType,
            'description' => $this->description,
            'attachment_url' => $this->attachment,
            'created_at' => $this->created_at,
            'updated_at' => $this->updated_at,
-           'sections' => $this->when(static::$includeRelations, new SectionCollection($this->sections))
+           'sections' => $this->when(static::$includeRelations, new SectionCollection($this->sections)),
+           'cover_image_mime_type' => $coverImageType,
+           'cover_image' => $coverImage
        ];
    }
 }
