@@ -32,9 +32,20 @@ class DatabaseSeeder extends Seeder
             });
         });
 
+
         $user2 = factory(User::class)->create([
             'email' => 'email02@gmail.com',
             'password' => 'pass1234'
         ]);
+
+        $user2->authoredCourses()->saveMany(factory(Course::class, 3)->make());
+
+        $user2->authoredCourses->each(function($course) {
+            $course->sections()->saveMany(factory(Section::class, 3)->make());
+            
+            $course->sections->each(function($section) {
+                $section->lessons()->saveMany(factory(Lesson::class, 5)->make());
+            });
+        });
     }
 }
