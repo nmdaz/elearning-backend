@@ -28,7 +28,7 @@ class CourseControllerTest extends TestCase
     }
 
     public function test_get_all_courses_get_status_code_200()
-    {
+    {        
         $this->getJson('/api/courses')
             ->assertOk()
             ->assertJsonStructure(['courses']);
@@ -78,8 +78,6 @@ class CourseControllerTest extends TestCase
 
     public function test_create_course_success()
     {
-        $this->withoutExceptionHandling();
-
         $imageFile = UploadedFile::fake()->image('xxx.jpg');
         $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
 
@@ -112,18 +110,25 @@ class CourseControllerTest extends TestCase
         ]);
     }
 
+    public function test_user_cant_edit_other_users_course() {        
+        $course = $this->user->authoredCourses()->first();
+        $user2 = factory(User::class)->create();
+        Sanctum::actingAs($user2);
+        $this->patchJson("api/courses/$course->id")->assertForbidden();
+    }
+
     public function test_edit_course_return_validation_error() {
         $course = $this->user->authoredCourses()->first();
+        Sanctum::actingAs($this->user);
         $this->patchJson("api/courses/$course->id")->assertStatus(422);
     }
 
-    public function test_edit_course_cover_imge() {
-        $course = $this->user->authoredCourses()->first();
-
+    public function test_edit_course_cover_image() {
+        Sanctum::actingAs($this->user);
         Storage::fake('public');
 
+        $course = $this->user->authoredCourses()->first();
         $imageFile = UploadedFile::fake()->image('xxx.jpg');
-
         $data = [
             'cover_image' => $imageFile
         ];
@@ -139,11 +144,12 @@ class CourseControllerTest extends TestCase
     }
 
     public function test_edit_course() {
+        Sanctum::actingAs($this->user);
+        Storage::fake('public');
+
         $course = $this->user->authoredCourses()->first();
         $newName = $this->faker->sentence;
         $newDescription = $this->faker->paragraph;
-
-        Storage::fake('public');
 
         $imageFile = UploadedFile::fake()->image('xxx.jpg');
         $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');

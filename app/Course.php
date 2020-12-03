@@ -7,6 +7,7 @@ use App\Section;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\App;
 
 
 class Course extends Model
@@ -15,14 +16,23 @@ class Course extends Model
     
     public function setCoverImageAttribute(UploadedFile $value)
     {
-    	$path = Storage::disk('public')->putFile('covers', $value);
+        if (App::environment('production')) {
+            $path = Storage::disk('google')->putFile('covers', $value);
+        } else {
+            $path = Storage::disk('public')->putFile('covers', $value);
+        }
+    	
 
     	$this->attributes['cover_image'] = $path;
     }
 
     public function setAttachmentAttribute(UploadedFile $value)
     {
-        $path = Storage::disk('public')->putFile('attachments', $value);
+        if (App::environment('production')) {
+            $path = Storage::disk('google')->putFile('attachments', $value);
+        } else {
+            $path = Storage::disk('public')->putFile('attachments', $value);
+        }
 
         $this->attributes['attachment'] = $path;
     }

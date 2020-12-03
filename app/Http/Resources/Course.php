@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\App;
 
 class Course extends JsonResource
 {
@@ -17,9 +18,14 @@ class Course extends JsonResource
     */
    public function toArray($request)
    {
-       $coverImageType = Storage::disk('public')->getMimetype($this->cover_image);
-       $coverImage = base64_encode(Storage::disk('public')->get($this->cover_image));
-
+       if (App::environment('production')) {
+            $coverImageType = Storage::disk('google')->getMimetype($this->cover_image);
+            $coverImage = base64_encode(Storage::disk('google')->get($this->cover_image));
+        } else {
+          $coverImageType = Storage::disk('public')->getMimetype($this->cover_image);
+            $coverImage = base64_encode(Storage::disk('public')->get($this->cover_image));
+        }
+        
        return [
            'id' => $this->id,
            'author_id' => $this->author->id,

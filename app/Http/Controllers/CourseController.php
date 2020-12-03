@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\App;
 use App\Http\Resources\Course as CourseResource;
 use App\Http\Resources\CoursePreview as CoursePreviewResource;
 use App\Http\Resources\CoursePreviewCollection;
@@ -73,6 +75,8 @@ class CourseController extends Controller
 
     public function update(Request $request, Course $course)
     {
+        Gate::authorize('update', $course);
+
         $validator = Validator::make($request->all(), [
             'name' => 'string',
             'description' => 'string',
@@ -97,7 +101,11 @@ class CourseController extends Controller
     public function downloadAttachment(Request $request, Course $course) 
     {
         if ($course->attachment) {
-            return Storage::disk('public')->download($course->attachment);
+            if (App::environment('production')) {
+                return Storage::disk('google')->download($course->attachment);
+            } else {
+                return Storage::disk('public')->download($course->attachment);
+            }
         } else {
             return response()->json(['errors' => [
                 'attachment' => 'Course has no attachment'

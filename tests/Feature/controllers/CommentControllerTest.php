@@ -31,7 +31,7 @@ class CommentControllerTest extends TestCase
     }
 
     public function test_add_comment_to_lesson_return_201_status_code()
-    {
+    {        
         $lesson = $this->user->authoredCourses->first()
             ->sections->first()
             ->lessons->first();
