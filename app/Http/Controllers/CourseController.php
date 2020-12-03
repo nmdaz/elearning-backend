@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\App;
 use App\Http\Resources\Course as CourseResource;
 use App\Http\Resources\CoursePreview as CoursePreviewResource;
 use App\Http\Resources\CoursePreviewCollection;
@@ -71,7 +73,43 @@ class CourseController extends Controller
         ], 201);
     }
 
-    public function downloadAttachment(Request $request, Course $course) {
-        return Storage::disk('public')->download($course->attachment);
+    public function update(Request $request, Course $course)
+    {
+        Gate::authorize('update', $course);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'string',
+            'description' => 'string',
+            'cover_image' => 'mimes:jpg,jpeg,bmp,png',
+            'attachment' => 'mimes:zip,rar'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $validated = $validator->validated();
+
+        if (! $validated) {
+            return response()->json(['errors' => ['validation' => 'Empty request data']], 422);
+        }
+        
+        $course->update($validated);
+        return response()->json(['success' => 'Course was Updated'], 200);
+    }
+
+    public function downloadAttachment(Request $request, Course $course) 
+    {
+        if ($course->attachment) {
+            if (App::environment('production')) {
+                return Storage::disk('google')->download($course->attachment);
+            } else {
+                return Storage::disk('public')->download($course->attachment);
+            }
+        } else {
+            return response()->json(['errors' => [
+                'attachment' => 'Course has no attachment'
+            ]], 404);
+        }
     }
 }
