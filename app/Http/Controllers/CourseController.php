@@ -20,7 +20,7 @@ class CourseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->only(['store', 'update']);
+        $this->middleware('auth:sanctum')->only(['store', 'update', 'create']);
     }
 
     public function index(Request $request)
@@ -47,8 +47,6 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        Gate::authorize('create', $course);
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'description' => 'required',
