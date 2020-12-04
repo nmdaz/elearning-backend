@@ -7,17 +7,20 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\App;
+use App\Includes\DriveStorageHelper;
 use App\Http\Resources\Course as CourseResource;
 use App\Http\Resources\CoursePreview as CoursePreviewResource;
 use App\Http\Resources\CoursePreviewCollection;
 use App\Http\Resources\CourseCollection;
 use App\Course;
+use GuzzleHttp\Exception\ConnectException;
+
 
 class CourseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->only('store');
+        $this->middleware('auth:sanctum')->only(['store', 'update']);
     }
 
     public function index(Request $request)
@@ -44,6 +47,8 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('create', $course);
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'description' => 'required',
@@ -102,7 +107,25 @@ class CourseController extends Controller
     {
         if ($course->attachment) {
             if (App::environment('production')) {
-                return Storage::disk('google')->download($course->attachment);
+
+                $filename = $course->attachment;
+
+                $dir = '/';
+                $recursive = false; // Get subdirectories also?
+                $contents = collect(Storage::cloud()->listContents($dir, $recursive));
+
+                $file = $contents
+                    ->where('type', '=', 'file')
+                    ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
+                    ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
+                    ->first(); // there can be duplicate file names!
+
+                $rawData = Storage::cloud()->get($file['path']);
+
+                return response($rawData, 200)
+                        ->header('ContentType', $file['mimetype'])
+                        ->header('Content-Disposition', "attachment; filename=$filename");
+                
             } else {
                 return Storage::disk('public')->download($course->attachment);
             }

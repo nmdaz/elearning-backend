@@ -34,7 +34,6 @@ Route::middleware('auth:sanctum')->group( function () {
 	Route::get('/users/{user}/enrolled-courses', 'UserEnrolledCourseController@index');
 	Route::post('/users/{user}/enrolled-courses/{course}', 'UserEnrolledCourseController@store');
 	Route::delete('/users/{user}/enrolled-courses/{course}', 'UserEnrolledCourseController@destroy');
-
 });
 
 

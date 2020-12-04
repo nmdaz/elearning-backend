@@ -17,24 +17,23 @@ class Course extends Model
     public function setCoverImageAttribute(UploadedFile $value)
     {
         if (App::environment('production')) {
-            $path = Storage::disk('google')->putFile('covers', $value);
+            $path = Storage::cloud()->putFile('/', $value);
+            $this->attributes['cover_image'] = $path;
         } else {
             $path = Storage::disk('public')->putFile('covers', $value);
+            $this->attributes['cover_image'] = $path;
         }
-    	
-
-    	$this->attributes['cover_image'] = $path;
     }
 
     public function setAttachmentAttribute(UploadedFile $value)
     {
         if (App::environment('production')) {
-            $path = Storage::disk('google')->putFile('attachments', $value);
+            $path = Storage::disk('google')->putFile('/', $value);
+            $this->attributes['attachment'] = $path;
         } else {
             $path = Storage::disk('public')->putFile('attachments', $value);
-        }
-
-        $this->attributes['attachment'] = $path;
+            $this->attributes['attachment'] = $path;
+        }     
     }
 
     public function author()
