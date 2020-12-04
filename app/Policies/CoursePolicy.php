@@ -20,7 +20,15 @@ class CoursePolicy
         //
     }
 
+    public function create(User $user, Course $course) {
+        return $user->id === $course->author_id;
+    }
+
     public function update(User $user, Course $course) {
+        return $user->id === $course->author_id;
+    }
+
+    public function delete(User $user, Course $course) {
         return $user->id === $course->author_id;
     }
 }
