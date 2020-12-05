@@ -10,7 +10,6 @@ use Faker\Generator as Faker;
 $factory->define(Course::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence,
-        'cover_image' => UploadedFile::fake()->image('cover.jpeg'),
         'description' => $faker->paragraph
     ];
 });

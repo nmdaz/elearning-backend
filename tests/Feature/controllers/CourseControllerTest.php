@@ -2,12 +2,16 @@
 
 namespace Tests\Feature\controllers;
 
+use App;
 use App\Course;
 use App\User;
+use App\Includes\DriveStorageHelper;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 
@@ -29,6 +33,8 @@ class CourseControllerTest extends TestCase
 
     public function test_get_all_courses_get_status_code_200()
     {        
+        $this->withoutExceptionHandling();
+
         $this->getJson('/api/courses')
             ->assertOk()
             ->assertJsonStructure(['courses']);
@@ -51,14 +57,11 @@ class CourseControllerTest extends TestCase
 
     public function test_create_course_failed_course_validation()
     {
-        $imageFile = UploadedFile::fake()->image('xxx.jpg');
-        $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
-
         $data = [
             'name' => '',
             'description' => '',
-            'cover_image' => $rarFile,
-            'attachment' => $imageFile
+            'cover_image' => 'test',
+            'attachment' => 'test'
         ];
 
         $user = factory(User::class)->create();
@@ -78,20 +81,15 @@ class CourseControllerTest extends TestCase
 
     public function test_create_course_success()
     {
-        $imageFile = UploadedFile::fake()->image('xxx.jpg');
-        $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
+        $this->withoutExceptionHandling();
 
         $data = [
             'name' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
-            'cover_image' => $imageFile,
-            'attachment' => $rarFile
+            'description' => $this->faker->paragraph
         ];
 
         $user = factory(User::class)->create();
         Sanctum::actingAs($user);
-
-        Storage::fake('public');
 
         $this->postJson('api/courses', $data)
             ->assertSuccessful()
@@ -100,13 +98,9 @@ class CourseControllerTest extends TestCase
                 'course_id'
             ]);
 
-        Storage::disk('public')->assertExists('/covers/' . $imageFile->hashName());
-        Storage::disk('public')->assertExists('/attachments/' . $rarFile->hashName());
-
         $this->assertDatabaseHas('courses', [
             'name' => $data['name'],
-            'description' => $data['description'],
-            'cover_image' => 'covers/' . $imageFile->hashName()
+            'description' => $data['description']
         ]);
     }
 
@@ -125,27 +119,23 @@ class CourseControllerTest extends TestCase
 
     public function test_edit_course_cover_image() {
         Sanctum::actingAs($this->user);
-        Storage::fake('public');
+        Storage::fake('google');
 
         $course = $this->user->authoredCourses()->first();
+
         $imageFile = UploadedFile::fake()->image('xxx.jpg');
+
         $data = [
             'cover_image' => $imageFile
         ];
 
         $this->patchJson("api/courses/$course->id", $data)
         ->assertJsonStructure(['success']);
-
-        $data['cover_image'] = 'covers/'. $data['cover_image']->hashName();
-
-        Storage::disk('public')->assertExists('/covers/'. $imageFile->hashName());
-
-        $this->assertDatabaseHas('courses', $data);
     }
 
     public function test_edit_course() {
         Sanctum::actingAs($this->user);
-        Storage::fake('public');
+        Storage::fake('google');
 
         $course = $this->user->authoredCourses()->first();
         $newName = $this->faker->sentence;
@@ -164,17 +154,14 @@ class CourseControllerTest extends TestCase
         $this->patchJson("api/courses/$course->id", $data)
         ->assertJsonStructure(['success']);
 
-        $data['cover_image'] = 'covers/'. $data['cover_image']->hashName();
-        $data['attachment'] = 'attachments/'. $data['attachment']->hashName();
-
-        Storage::disk('public')->assertExists('/covers/'. $imageFile->hashName());
-        Storage::disk('public')->assertExists('/attachments/'. $rarFile->hashName());
+        unset($data['cover_image']);
+        unset($data['attachment']);
 
         $this->assertDatabaseHas('courses', $data);
     }
 
     public function test_download_attachment_but_course_has_no_attachment()
-    {
+    {        
         $course =  $this->user->authoredCourses()->first();
         $this->get("api/courses/$course->id/download-attachment")->assertNotFound()
             ->assertJsonStructure(['errors' => [ 'attachment' ]]);
@@ -182,11 +169,28 @@ class CourseControllerTest extends TestCase
 
     public function test_download_attachment()
     {
+        $this->withoutExceptionHandling();
+
         $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
         $course =  $this->user->authoredCourses()->first();
         $course->attachment = $rarFile;
         $course->save();
         
         $response = $this->get("api/courses/$course->id/download-attachment")->assertSuccessful();
+    }
+
+    public function test_remove_attachment()
+    {
+        $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
+        $user = factory(User::class)->create();
+        $user->authoredCourses()->save(factory(Course::class)->make());
+        $course =  $user->authoredCourses()->first();
+        $course->attachment = $rarFile;
+        $course->save();
+
+        $this->postJson("api/courses/$course->id/remove-attachment")->assertSuccessful();
+
+        $course = Course::find($course->id)->first();
+        $this->assertNull($course->attachment);
     }
 }
