@@ -175,7 +175,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\UserRepositoryProvider::class,
-        App\Providers\GoogleDriveServiceProvider::class
+        App\Providers\GoogleDriveServiceProvider::class,
+        App\Providers\DriveStorageHelperProvider::class
 
     ],
 

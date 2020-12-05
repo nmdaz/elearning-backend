@@ -17,27 +17,22 @@ class CoursePreview extends JsonResource
 	*/
    public function toArray($request)
    {
-		if (App::environment('production')) {
-			$filename = $this->cover_image;
+   		$storageHelper = resolve(DriveStorageHelper::class);
+   		$fileName = $this->cover_image;
 
-			$dir = '/';
-			$recursive = false; // Get subdirectories also?
-			$contents = collect(Storage::cloud()->listContents($dir, $recursive));
+   		$coverImageType;
+   		$coverImage;
+		
+		$file = $storageHelper->getFileUsingFileName($fileName);
+		$rawData = $storageHelper->getRawDataUsingFile($file);
 
-			$file = $contents
-				->where('type', '=', 'file')
-				->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
-				->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
-				->first(); // there can be duplicate file names!
-
-			$rawData = Storage::cloud()->get($file['path']);
-
+		if (!$file || !$rawData) {
+			$coverImageType = null;
+			$coverImage = null;
+		} else {
 			$coverImageType = $file['mimetype'];
 			$coverImage = base64_encode($rawData);
-		 } else {
-			$coverImageType = Storage::disk('public')->getMimetype($this->cover_image);
-			$coverImage = base64_encode(Storage::disk('public')->get($this->cover_image));
-		 }
+		}
 
 	   return [
 		   'id' => $this->id,

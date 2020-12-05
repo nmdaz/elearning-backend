@@ -18,8 +18,11 @@ use GuzzleHttp\Exception\ConnectException;
 
 class CourseController extends Controller
 {
+    protected $storageHelper;
+
     public function __construct()
     {
+        $this->storageHelper = app()->make(DriveStorageHelper::class);
         $this->middleware('auth:sanctum')->only(['store', 'update', 'create']);
     }
 
@@ -48,9 +51,9 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'description' => 'required',
-            'cover_image' => 'required|mimes:jpg,jpeg,bmp,png',
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'cover_image' => 'mimes:jpg,jpeg,bmp,png',
             'attachment' => 'mimes:zip,rar'
         ]);
 
@@ -62,7 +65,10 @@ class CourseController extends Controller
         $course->author_id = $request->user()->id;
         $course->name = $request->name;
         $course->description = $request->description;
-        $course->cover_image = $request->cover_image;
+        
+        if ($request->cover_image) {
+            $course->cover_image = $request->cover_image;
+        }
 
         if ($request->attachment) {
             $course->attachment = $request->attachment;
@@ -101,32 +107,22 @@ class CourseController extends Controller
         return response()->json(['success' => 'Course was Updated'], 200);
     }
 
+    public function removeAttachment(Request $request, Course $course)
+    {
+        $course->removeAttachment();
+        return response()->json(['success' => 'Attachment removed'], 200);
+    }
+
     public function downloadAttachment(Request $request, Course $course) 
     {
         if ($course->attachment) {
-            if (App::environment('production')) {
+            $fileName = $course->attachment;
+            $file = $this->storageHelper->getFileUsingFilename($fileName);
+            $rawData = $this->storageHelper->getRawDataUsingFile($file);
 
-                $filename = $course->attachment;
-
-                $dir = '/';
-                $recursive = false; // Get subdirectories also?
-                $contents = collect(Storage::cloud()->listContents($dir, $recursive));
-
-                $file = $contents
-                    ->where('type', '=', 'file')
-                    ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
-                    ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
-                    ->first(); // there can be duplicate file names!
-
-                $rawData = Storage::cloud()->get($file['path']);
-
-                return response($rawData, 200)
-                        ->header('ContentType', $file['mimetype'])
-                        ->header('Content-Disposition', "attachment; filename=$filename");
-                
-            } else {
-                return Storage::disk('public')->download($course->attachment);
-            }
+            return response($rawData, 200)
+                    ->header('ContentType', $file['mimetype'])
+                    ->header('Content-Disposition', "attachment; filename=$fileName");
         } else {
             return response()->json(['errors' => [
                 'attachment' => 'Course has no attachment'

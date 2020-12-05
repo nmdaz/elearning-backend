@@ -11,6 +11,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('courses/{course}/download-attachment', 'CourseController@downloadAttachment');
+Route::post('courses/{course}/remove-attachment', 'CourseController@removeAttachment');
 
 Route::apiResource('courses', 'CourseController');
 Route::apiResource('courses.sections', 'SectionController');

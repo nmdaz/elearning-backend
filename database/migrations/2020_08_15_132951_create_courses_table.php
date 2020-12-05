@@ -17,11 +17,10 @@ class CreateCoursesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('author_id');
             $table->string('name');
-            $table->string('cover_image');
             $table->text('description');
-            $table->binary('attachment')->nullable();
+            $table->string('cover_image')->nullable();
+            $table->string('attachment')->nullable();
             $table->timestamps();
-
             $table->foreign('author_id')->references('id')->on('users');
         });
     }
