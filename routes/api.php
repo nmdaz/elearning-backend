@@ -11,7 +11,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('courses/{course}/download-attachment', 'CourseController@downloadAttachment');
-Route::post('courses/{course}/remove-attachment', 'CourseController@removeAttachment');
+
 
 Route::apiResource('courses', 'CourseController');
 Route::apiResource('courses.sections', 'SectionController');
@@ -19,6 +19,11 @@ Route::apiResource('courses.sections.lessons', 'LessonController');
 
 Route::middleware('auth:sanctum')->group( function () {
 	Route::get('/me', 'TokenBearerController');
+
+	Route::post('courses/{course}/remove-attachment', 'CourseController@removeAttachment');
+
+	Route::post('courses/{course}/publish', 'CourseController@publish');
+	Route::post('courses/{course}/unpublish', 'CourseController@unpublish');
 
 	Route::post('/lessons/{lesson}/comments', 'CommentController@store');
 
