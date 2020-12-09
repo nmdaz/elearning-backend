@@ -33,11 +33,7 @@ class CourseController extends Controller
 
     public function show(Request $request, Course $course)
     {
-        if ((bool) $request->input('preview') == true) {
-            return new CoursePreviewResource($course);
-        } else {
-            return new CourseResource($course);
-        }
+        return new CourseResource($course);
     }
 
     public function store(Request $request)
