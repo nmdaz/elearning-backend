@@ -37,4 +37,9 @@ class LessonController extends Controller
 
     	return response()->json(['success' => 'Lesson successfully created'], 201);
     }
+
+    public function destroy(Request $request, Course $course, Section $section, Lesson $lesson) {
+        $lesson->delete();
+        return response()->json(['success' => 'Lesson was deleted'], 201);
+    }
 }

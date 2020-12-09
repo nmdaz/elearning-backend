@@ -96,7 +96,18 @@ class LessonControllerTest extends TestCase
 
         $this->postJson("api/courses/$course->id/sections/$section->id/lessons", $data)
             ->assertStatus(201);
-
         $this->assertDatabaseHas('lessons', $data);
+    }
+
+    public function test_delete_lesson()
+    {
+        $course = $this->user->authoredCourses->first();
+        $section = $course->sections->first();
+        $lesson = $section->lessons->first();
+
+        $this->deleteJson("api/courses/$course->id/sections/$section->id/lessons/$lesson->id")
+            ->assertSuccessful();
+
+        $this->assertDatabaseMissing('lessons', ['id' => $lesson->id]);
     }
 }
