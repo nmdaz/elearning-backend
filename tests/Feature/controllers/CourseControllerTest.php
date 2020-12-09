@@ -160,6 +160,15 @@ class CourseControllerTest extends TestCase
         $this->assertDatabaseHas('courses', $data);
     }
 
+    public function test_delete_course()
+    {
+        $course =  $this->user->authoredCourses()->first();
+        Sanctum::actingAs($this->user);
+
+        $this->deleteJson("api/courses/$course->id")->assertSuccessful();
+        $this->assertDatabaseMissing('courses', ['id' => $course->id]);
+    }
+
     public function test_download_attachment_but_course_has_no_attachment()
     {        
         $course =  $this->user->authoredCourses()->first();
@@ -167,6 +176,9 @@ class CourseControllerTest extends TestCase
             ->assertJsonStructure(['errors' => [ 'attachment' ]]);
     }
 
+    /**
+    * @group online
+    */
     public function test_download_attachment()
     {
         $this->withoutExceptionHandling();
@@ -179,6 +191,9 @@ class CourseControllerTest extends TestCase
         $response = $this->get("api/courses/$course->id/download-attachment")->assertSuccessful();
     }
 
+    /**
+    * @group online
+    */
     public function test_remove_attachment()
     {
         $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
@@ -188,9 +203,35 @@ class CourseControllerTest extends TestCase
         $course->attachment = $rarFile;
         $course->save();
 
+        Sanctum::actingAs($user);
         $this->postJson("api/courses/$course->id/remove-attachment")->assertSuccessful();
 
         $course = Course::find($course->id)->first();
         $this->assertNull($course->attachment);
     }
+
+    public function test_publish_course()
+    {
+        $user = $this->user;
+        $user->authoredCourses()->save(factory(Course::class)->make());
+        $course =  $user->authoredCourses->last();
+        Sanctum::actingAs($user);
+
+        $this->postJson("api/courses/$course->id/publish")->assertSuccessful();
+        $this->assertDatabaseHas('courses', ['id' => $course->id, 'published' => true]);
+    }
+
+    public function test_unpublish_course()
+    {
+        $user = $this->user;
+        $user->authoredCourses()->save(factory(Course::class)->make());
+        $course =  $user->authoredCourses->last();
+        $course->published = false;
+        Sanctum::actingAs($user);
+
+        $this->postJson("api/courses/$course->id/unpublish")->assertSuccessful();
+        $this->assertDatabaseHas('courses', ['id' => $course->id, 'published' => false]);
+    }
+
+
 }

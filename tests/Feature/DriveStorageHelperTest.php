@@ -11,6 +11,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use GuzzleHttp\Exception\ConnectException;
 
+/**
+* @group online
+*/
 class DriveStorageTest extends TestCase
 {
     protected $storageHelper;

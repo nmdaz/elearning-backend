@@ -20,6 +20,7 @@ class CreateCoursesTable extends Migration
             $table->text('description');
             $table->string('cover_image')->nullable();
             $table->string('attachment')->nullable();
+            $table->boolean('published')->default(false);
             $table->timestamps();
             $table->foreign('author_id')->references('id')->on('users');
         });

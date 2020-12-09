@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\App;
 use App\Includes\DriveStorageHelper;
 use App\Http\Resources\Course as CourseResource;
-use App\Http\Resources\CoursePreview as CoursePreviewResource;
-use App\Http\Resources\CoursePreviewCollection;
 use App\Http\Resources\CourseCollection;
 use App\Course;
 use GuzzleHttp\Exception\ConnectException;
@@ -23,20 +21,14 @@ class CourseController extends Controller
     public function __construct()
     {
         $this->storageHelper = app()->make(DriveStorageHelper::class);
-        $this->middleware('auth:sanctum')->only(['store', 'update', 'create']);
+        $this->middleware('auth:sanctum')->only([
+            'store', 'update', 'create', 'destroy', 'remove-attachment', 'publish', 'unpublish' 
+        ]);
     }
 
     public function index(Request $request)
     {
-        $courses;
-        
-    	if ((bool) $request->input('preview') == true) {
-    		$courses = new CoursePreviewCollection(Course::paginate(5));
-        } else {
-            $courses = new CourseCollection(Course::paginate(5));
-        }
-
-    	return $courses; 
+    	return new CourseCollection(Course::paginate(5)); 
     }
 
     public function show(Request $request, Course $course)
@@ -107,8 +99,19 @@ class CourseController extends Controller
         return response()->json(['success' => 'Course was Updated'], 200);
     }
 
+    public function destroy(Request $request, Course $course)
+    {
+        Gate::authorize('delete', $course);
+
+        $course->delete();
+
+        return response()->json(['success' => 'Course was deleted'], 200);
+    }
+
     public function removeAttachment(Request $request, Course $course)
     {
+        Gate::authorize('delete', $course);
+
         $course->removeAttachment();
         return response()->json(['success' => 'Attachment removed'], 200);
     }
@@ -128,5 +131,21 @@ class CourseController extends Controller
                 'attachment' => 'Course has no attachment'
             ]], 404);
         }
+    }
+
+    public function publish(Request $request, Course $course)
+    {
+        $course->published = true;
+        $course->save();
+
+        return response()->json(['success' => 'Attachment removed'], 200);
+    }
+
+    public function unpublish(Request $request, Course $course)
+    {
+        $course->published = false;
+        $course->save();
+
+        return response()->json(['success' => 'Attachment removed'], 200);
     }
 }

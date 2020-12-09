@@ -15,7 +15,10 @@ class UserNotEnrolledCourseController extends Controller
 
     	$courses =  Course::whereNotIn('id', function($query) use ($userId) {
     	    $query->select('course_id')->from('course_user')->where('user_id', '=', $userId);
-    	})->where('author_id', '!=', $userId)->paginate(5);
+    	})
+    	->where('published', '=', false)
+    	->where('author_id', '!=', $userId)
+    	->paginate(5);
 
     	return new CourseCollection($courses);
     }

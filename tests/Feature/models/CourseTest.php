@@ -19,6 +19,9 @@ class CourseTest extends TestCase
         parent::setUp();
     }
     
+    /**
+    * @group online
+    */
     public function test_course_cover_image()
     {
         $coverImage = UploadedFile::fake()->image('cover.jpeg');
@@ -33,6 +36,9 @@ class CourseTest extends TestCase
         $this->assertNotNull($rawData);
     }
 
+    /**
+    * @group online
+    */
     public function test_course_attachment()
     {
         $rarFile = UploadedFile::fake()->create('compressed.rar', 1, 'application/x-rar-compressed');
@@ -46,6 +52,7 @@ class CourseTest extends TestCase
     }
 
     /**
+    * @group online
     * @depends test_course_attachment
     */
     public function test_course_remove_attachment($course)
