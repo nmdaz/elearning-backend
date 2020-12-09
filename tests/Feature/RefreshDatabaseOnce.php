@@ -16,6 +16,6 @@ class RefreshDatabaseOnce extends TestCase
     */
     public function test_refresh_database()
     {
-        Artisan::call('migrate:refresh');
+        Artisan::call('migrate:fresh');
     }
 }
