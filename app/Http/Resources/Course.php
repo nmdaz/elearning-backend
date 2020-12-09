@@ -46,7 +46,8 @@ class Course extends JsonResource
 		   'updated_at' => $this->updated_at,
 		   'sections' => $this->when(static::$includeRelations, new SectionCollection($this->sections)),
 		   'cover_image_mime_type' => $coverImageType,
-		   'cover_image' => $coverImage
+		   'cover_image' => $coverImage,
+		   'published' => (bool) $this->published
 	   ];
    }
 }

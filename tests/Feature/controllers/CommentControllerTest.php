@@ -42,5 +42,25 @@ class CommentControllerTest extends TestCase
             ->assertStatus(201);
 
         $this->assertDatabaseHas('comments', ['body' => $comment]);
+
+        return ['lesson' => $lesson, 'comment' => $comment];
+    }
+
+
+    /**
+    * @depends test_add_comment_to_lesson_return_201_status_code
+    */
+    public function test_get_all_comment_of_course($args)
+    {
+        $lesson = $args['lesson'];
+        $comment = $args['comment'];
+
+        $lesson = $this->user->authoredCourses->first()
+            ->sections->first()
+            ->lessons->first();
+
+        $this->getJson("api/lessons/$lesson->id/comments")
+            ->assertSuccessful()
+            ->assertJsonStructure(['comments' => []]);
     }
 }

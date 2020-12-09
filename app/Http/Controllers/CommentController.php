@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Lesson;
 use App\Comment;
+use App\Http\Resources\CommentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Sanctum;
@@ -11,7 +12,8 @@ use Laravel\Sanctum\Sanctum;
 
 class CommentController extends Controller
 {
-    public function store(Request $request, Lesson $lesson) {
+    public function store(Request $request, Lesson $lesson) 
+    {
     	$userId = Auth::user()->id;
     	$lessonId = $lesson->id;
 
@@ -22,5 +24,10 @@ class CommentController extends Controller
     	$comment->save();
 
     	return response()->json(['message' => 'Comment was successfully submitted'], 201);
+    }
+
+    public function index(Request $request, Lesson $lesson)
+    {
+        return new CommentCollection($lesson->comments()->latest()->get());
     }
 }
