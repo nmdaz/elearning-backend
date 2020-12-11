@@ -2,7 +2,7 @@
 
 Backend for an Elearning Website where you can create your own course or enroll to other users course.
 
-Built with Laravel Framework with Test Driven Development
+Built with Laravel Framework using Test Driven Development
 
 ## Done List
 
